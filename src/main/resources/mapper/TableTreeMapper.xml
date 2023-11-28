@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.catalog.mapper.TableTreeMapper">
+    <select id="selectTableTree" resultType="com.catalog.dto.TableTree">
+    SELECT
+	"table_name" tableName,
+	table_catalog tableCatalog
+    FROM
+        INFORMATION_SCHEMA.TABLES
+    WHERE
+        table_schema = 'public'
+    </select>
+
+    <select id="selectAllDataSource" resultType="com.catalog.vo.DataSourceTreeVo">
+    SELECT
+	datasource
+    FROM
+        data_table
+    where datasource is not null AND datasource != ''
+    group by  datasource
+    </select>
+
+    <select id="selectDataBase" resultType="com.catalog.vo.DataBaseTreeVo">
+    SELECT
+	database_name as dataBase
+    FROM
+        data_table
+    where datasource = #{datasource} and database_name is not null
+    group by  database_name
+    </select>
+
+    <select id="selectDataTable" resultType="com.catalog.vo.DataTableTreeVo">
+    SELECT
+	tablename as tableName,
+	id as tableId
+    FROM
+        data_table
+    where database_name = #{databaseName}
+    group by  tablename,id
+    </select>
+
+    <select id="selectByTableName" resultType="com.catalog.dto.TableColumn">
+    SELECT
+	COLUMN_NAME columnName,
+	DATA_TYPE dataType,
+	CHARACTER_MAXIMUM_LENGTH length,
+	IS_NULLABLE isNull,
+	COLUMN_DEFAULT columDefault
+    FROM
+	information_schema.COLUMNS
+    WHERE
+	TABLE_NAME =#{tableName}
+	AND TABLE_SCHEMA = 'public'
+    </select>
+</mapper>

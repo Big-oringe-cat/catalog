@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.catalog.mapper.DataRelationMapper">
+    <select id="selectDataRelation" resultType="com.catalog.dto.DataRelation">
+        SELECT
+        dr.id,
+        dr.dst_table dstTable,
+        dr.dst_field dstField,
+        dr.src_table srcTable,
+        dr.src_field srcField,
+        dr.realtion realtion,
+        dr.dst_datasource dstDatasource,
+        dr.dst_database dstDatabase,
+        dr.dst_schema dstSchema,
+        dr.src_datasource srcDatasource,
+        dr.src_database srcDatabase,
+        dr.src_schema srcSchema,
+        dr.update_time updateTime,
+        dr.operator operatorUser,
+        rc.check_flag checkFlag
+        FROM data_relation dr left join relation_check rc on dr.id = rc.id
+        where 1=1
+        <if test="srcTable!=null and srcTable!=''">
+            and dr.src_table like CONCAT ('%',#{srcTable},'%')
+        </if>
+        <if test="dataBase!=null and dataBase!=''">
+            and dr.src_database like CONCAT ('%',#{dataBase},'%')
+        </if>
+        <if test="checkFlag!=null and checkFlag!=''">
+            and rc.check_flag = #{checkFlag}
+        </if>
+    </select>
+</mapper>

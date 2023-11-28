@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.catalog.mapper.DiscoverTableMapper">
+    <select id="selectDiscoverTable" resultType="com.catalog.dto.DiscoverTable">
+        SELECT
+        dt.id,
+        dt.tablename tableName,
+        tc.table_comment tableComment,
+        tc.table_comment_eng tableCommentEng,
+        dt.database databaseName,
+        dt.update_time updateTime,
+        dt.schema schemaName,
+        dt.datasource datasource,
+        tc.update_frequency updateFrequency,
+        tc.operator operatorUser,
+        tc.category category,
+        tc.origin_flag checkFlag,
+        dt.skip,
+        dt.expire
+        FROM table_origin dt
+        left join table_check tc on dt.id = tc.oid
+        where tc.origin_flag = '2'
+        <if test="tableName!=null and tableName!=''">
+            and dt.tablename like CONCAT ('%',#{tableName},'%')
+        </if>
+        <if test="dataBase!=null and dataBase!=''">
+            and dt.database like CONCAT ('%',#{dataBase},'%')
+        </if>
+        order by dt.update_time desc
+    </select>
+
+    <select id="selectDiscoverField" resultType="com.catalog.vo.DiscoverFieldVo">
+        SELECT
+            id,
+            field,
+            fieldtype fieldType,
+            field_length fieldLength,
+            business_term businessTerm,
+            field_demo fieldDemo,
+            field_demo2 fieldDemo2,
+            field_demo3 fieldDemo3,
+            update_time updateTime
+        FROM "field_origin"
+        <where>
+            <if test="table_id!=null and table_id!=''">
+                and table_id=#{table_id}
+            </if>
+            <if test="field!=null and field!=''">
+                and field like concat('%',#{field},'%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectOneTableOrigin" resultType="com.catalog.dto.TableOrigin2">
+        SELECT
+        id,
+        datasource,
+        "database" databaseName,
+        "schema" schemaName,
+        tablename,
+        business_term,
+        frequency,
+        "rows",
+        update_time,
+        "size",
+        "type",
+        skip,
+        expire
+        FROM table_origin
+        where id=#{id}
+        limit 1
+    </select>
+
+</mapper>

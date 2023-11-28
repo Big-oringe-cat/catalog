@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.catalog.mapper.DataSourceMapper">
+    <select id="selectDataSource" resultType="com.catalog.dto.DataSource">
+        SELECT
+        id,
+        data_base_name dataBaseName,
+        data_source_name dataSourceName,
+        source_address sourceAddress,
+        source_owner sourceOwner,
+        maintainer maintainer,
+        source_type sourceType
+        FROM data_source
+        where 1=1
+        <if test="dataBase!=null and dataBase!=''">
+            and data_base_name = #{dataBase}
+        </if>
+    </select>
+</mapper>

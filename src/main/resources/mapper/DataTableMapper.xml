@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.catalog.mapper.DataTableMapper">
+    <select id="selectDataTable" resultType="com.catalog.dto.DataTable">
+        SELECT
+        dt.id,
+        dt.tablename tableName,
+        dt.table_comment tableComment,
+        dt.table_comment_eng tableCommentEng,
+        dt.database_name databaseName,
+        dt.update_time updateTime,
+        dt.schema_name schemaName,
+        dt.datasource datasource,
+        dt.update_frequency updateFrequency,
+        dt.operator operatorUser,
+        dt.category category,
+        tc.origin_flag checkFlag
+        FROM data_table dt left join table_check tc on dt.id = tc.import_id
+        where 1=1
+        <if test="tableName!=null and tableName!=''">
+            and dt.tablename like CONCAT ('%',#{tableName},'%')
+        </if>
+        <if test="category!=null and category!=''">
+            and dt.category like CONCAT ('%',#{category},'%')
+        </if>
+        <if test="dataBase!=null and dataBase!=''">
+            and dt.database_name like CONCAT ('%',#{dataBase},'%')
+        </if>
+        <if test="checkFlag!=null and checkFlag!=''">
+            and tc.origin_flag = #{checkFlag}
+        </if>
+        <if test="tableComment!=null and tableComment!='' and tableComment!='empty'">
+            and dt.table_comment like CONCAT ('%',#{tableComment},'%')
+        </if>
+        <if test="tableCommentEng!=null and tableCommentEng!='' and tableCommentEng!='empty'">
+            and dt.table_comment_eng like CONCAT ('%',#{tableCommentEng},'%')
+        </if>
+        <if test="tableComment!=null and tableComment =='empty'">
+            and dt.table_comment =''
+        </if>
+        <if test="tableCommentEng!=null and tableCommentEng =='empty'">
+            and dt.table_comment_eng =''
+        </if>
+        order by dt.update_time desc
+    </select>
+
+
+    <select id="selectById" resultType="com.catalog.dto.DataTable">
+        SELECT
+        dt.id,
+        dt.tablename tableName,
+        dt.table_comment tableComment,
+        dt.table_comment_eng tableCommentEng,
+        dt.database_name databaseName,
+        dt.update_time updateTime,
+        dt.schema_name schemaName,
+        dt.datasource datasource,
+        dt.update_frequency updateFrequency,
+        tc.origin_flag checkFlag
+        FROM data_table dt left join table_check tc on dt.id = tc.import_id
+        where 1=1
+        <if test="tableId!=null and tableId!=''">
+            and dt.id like CONCAT ('%',#{tableId},'%')
+        </if>
+    </select>
+
+    <select id="selectByDataBase" resultType="java.lang.String">
+        SELECT
+        id
+        FROM data_table
+        where database_name = #{dataBase}
+    </select>
+
+    <select id="findDataSourceCount" resultType="java.lang.Integer">
+        SELECT COUNT
+        ( datasource ) as dataSourceNum
+        FROM
+        ( SELECT datasource FROM data_table WHERE datasource !='' GROUP BY datasource ) A
+    </select>
+
+    <select id="findProjectCount" resultType="java.lang.Integer">
+        SELECT COUNT
+        ( database_name ) as dataBaseNum
+        FROM
+        (select database_name from data_table where database_name !='' group by datasource,database_name) A
+    </select>
+
+    <select id="findTableCount" resultType="java.lang.Integer">
+        SELECT COUNT
+        ( tablename ) as tableNum
+        FROM
+        (select tablename from data_table where tablename !='' group by datasource,database_name,schema_name,tablename) A
+    </select>
+
+    <select id="findFieldCount" resultType="java.lang.Integer">
+        SELECT COUNT
+        ( field ) as fieldNum
+        FROM
+        (select field from data_field where field !='' group by table_id,field) A
+    </select>
+
+    <select id="findCountByCategory" resultType="com.catalog.vo.CategoryNumVo">
+        SELECT COUNT (*) as categoryNum,
+        (select count (*) from data_table) as totalNum
+        FROM data_table
+        where 1=1
+        <if test="category!=null and category!=''">
+            and category = #{category}
+        </if>
+    </select>
+
+    <select id="selectDataBase" resultType="java.lang.String">
+        SELECT
+        database_name
+        FROM data_table
+        group by database_name
+    </select>
+
+    <select id="findCategoryEmpty" resultType="com.catalog.vo.CategoryNumVo">
+        SELECT COUNT (*) as categoryNum,
+        (select count (*) from data_table) as totalNum
+        FROM data_table
+        where category = ''
+    </select>
+
+    <select id="findDsEmpty" resultType="com.catalog.vo.CategoryNumVo">
+        SELECT COUNT (*) as categoryNum,
+        (select count (*) from data_table) as totalNum
+        FROM data_table
+        where table_comment_eng = ''
+    </select>
+</mapper>

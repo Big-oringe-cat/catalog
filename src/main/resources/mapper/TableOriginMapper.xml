@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.catalog.mapper.TableOriginMapper">
+    <select id="selectTableOrigin" resultType="com.catalog.dto.TableOrigin">
+        SELECT
+        id,
+        datasource datasource,
+        database database,
+        tablename tableName,
+        business_term businessTerm,
+        frequency frequency
+        FROM table_origin
+        where 1=1
+        <if test="tableName!=null and tableName!=''">
+            and tablename like CONCAT ('%',#{tableName},'%')
+        </if>
+    </select>
+
+
+    <select id="selectTableTop10" resultType="com.catalog.vo.TableOriginTopVo">
+        select tablename,rows rowsSize,database from table_origin order by 2 desc limit 10
+    </select>
+
+    <select id="selectTableSizeTop10" resultType="com.catalog.vo.TableSizeTopVo">
+        select tablename,size tableSize,database from table_origin order by 2 desc limit 10
+    </select>
+</mapper>
